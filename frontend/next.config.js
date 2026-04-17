@@ -1,16 +1,14 @@
-import type { NextConfig } from "next";
-
-// File:    frontend/next.config.ts
-// Purpose: Next.js config — proxies /api/* to the Django backend in dev,
-//          so the frontend never hard-codes the backend host.
+// File:    frontend/next.config.js
+// Purpose: Next.js config — proxies /api/v1/* to Django backend in dev.
 // Owner:   Pranav
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   async rewrites() {
     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
     return [
       {
-        source: "/api/:path*",
+        source: "/api/v1/:path*",
         destination: `${apiBase}/:path*`,
       },
     ];
@@ -26,4 +24,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
