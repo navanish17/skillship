@@ -108,7 +108,7 @@ export default function AddWorkshopPage() {
               Add Another
             </button>
             <button
-              onClick={() => router.push("/admin/marketplace")}
+              onClick={() => router.push("/dashboard/admin/marketplace")}
               className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-to-r from-primary to-accent px-5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(5,150,105,0.5)] transition-all hover:-translate-y-0.5"
             >
               View Marketplace
@@ -126,7 +126,7 @@ export default function AddWorkshopPage() {
         subtitle="Create a new marketplace workshop listing"
         action={
           <Link
-            href="/admin/marketplace"
+            href="/dashboard/admin/marketplace"
             className="inline-flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-white px-5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -241,7 +241,7 @@ export default function AddWorkshopPage() {
           </div>
 
           <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] px-7 py-4 md:px-9">
-            <Link href="/admin/marketplace" className="h-10 rounded-full border border-[var(--border)] bg-white px-5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary">
+            <Link href="/dashboard/admin/marketplace" className="h-10 rounded-full border border-[var(--border)] bg-white px-5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary">
               Cancel
             </Link>
             <button type="submit" disabled={isLoading} className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-to-r from-primary to-accent px-6 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(5,150,105,0.5)] transition-all hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0">

@@ -46,7 +46,7 @@ export function RecentSchoolsTable() {
           <h3 className="text-base font-bold tracking-tight text-[var(--foreground)]">Recently Joined Schools</h3>
           <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">Latest schools onboarded to the platform</p>
         </div>
-        <Link href="/admin/schools" className="flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary-700">
+        <Link href="/dashboard/admin/schools" className="flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary-700">
           View all
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
@@ -93,8 +93,8 @@ export function RecentSchoolsTable() {
                 </td>
                 <td className="py-3">
                   <div className="flex items-center gap-3 text-xs">
-                    <button onClick={() => router.push("/admin/schools")} className="font-semibold text-primary transition-colors hover:text-primary-700">View</button>
-                    <button onClick={() => router.push("/admin/schools")} className="font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary">Edit</button>
+                    <button onClick={() => router.push("/dashboard/admin/schools")} className="font-semibold text-primary transition-colors hover:text-primary-700">View</button>
+                    <button onClick={() => router.push("/dashboard/admin/schools")} className="font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary">Edit</button>
                   </div>
                 </td>
               </motion.tr>

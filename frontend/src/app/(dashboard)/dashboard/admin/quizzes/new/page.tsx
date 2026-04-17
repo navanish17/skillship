@@ -78,7 +78,7 @@ export default function NewQuizPage() {
               Create Another
             </button>
             <button
-              onClick={() => router.push("/admin/quizzes")}
+              onClick={() => router.push("/dashboard/admin/quizzes")}
               className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-to-r from-primary to-accent px-5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(5,150,105,0.5)] transition-all hover:-translate-y-0.5"
             >
               View All Quizzes
@@ -96,7 +96,7 @@ export default function NewQuizPage() {
         subtitle="Set up quiz metadata — add questions after backend is connected"
         action={
           <Link
-            href="/admin/quizzes"
+            href="/dashboard/admin/quizzes"
             className="inline-flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-white px-5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -212,7 +212,7 @@ export default function NewQuizPage() {
           </div>
 
           <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] px-7 py-4 md:px-9">
-            <Link href="/admin/quizzes" className="h-10 rounded-full border border-[var(--border)] bg-white px-5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary">
+            <Link href="/dashboard/admin/quizzes" className="h-10 rounded-full border border-[var(--border)] bg-white px-5 text-sm font-semibold text-[var(--muted-foreground)] transition-colors hover:text-primary">
               Cancel
             </Link>
             <button
