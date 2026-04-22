@@ -1,20 +1,52 @@
 """
-File:    backend/apps/schools/models.py
-Purpose: School (the tenant root) and SchoolSettings (per-school feature flags).
-Why:     Everything in the system belongs to exactly one School. This is the "tenant" in multi-tenant.
-         School itself is NOT a TenantModel — it IS the tenant.
-Owner:   Prashant
-TODO:    class School(TimeStampedModel):
-           - id = UUIDField(pk)
-           - name, slug (unique), board = CharField(choices=[CBSE, ICSE, STATE])
-           - city, state, address
-           - plan = CharField(choices=[CORE, AGENTIC])       # maps to proposal plans 01 / 02
-           - subscription_expires_at = DateTimeField
-           - is_active = BooleanField(default=True)
-
-         class SchoolSettings(TimeStampedModel):
-           - school = OneToOneField(School)
-           - ai_enabled = BooleanField(default=True)
-           - custom_agent_config = JSONField(default=dict)    # per-school agent overrides
-           - branding = JSONField(default=dict)               # logo URL, primary color
+School — the tenant root. Every piece of data in the system belongs to one School.
+School itself is NOT a TenantModel — it IS the tenant.
 """
+
+import uuid
+
+from django.db import models
+
+from apps.common.models import TimeStampedModel
+
+
+class School(TimeStampedModel):
+    class Board(models.TextChoices):
+        CBSE = "CBSE", "CBSE"
+        ICSE = "ICSE", "ICSE"
+        STATE = "STATE", "State Board"
+
+    class Plan(models.TextChoices):
+        CORE = "CORE", "Core (Plan 01)"
+        AGENTIC = "AGENTIC", "Agentic (Plan 02)"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
+    board = models.CharField(max_length=10, choices=Board.choices)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    address = models.TextField(blank=True)
+    plan = models.CharField(max_length=10, choices=Plan.choices, default=Plan.CORE)
+    subscription_expires_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class SchoolSettings(TimeStampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    school = models.OneToOneField(School, on_delete=models.CASCADE, related_name="settings")
+    ai_enabled = models.BooleanField(default=True)
+    custom_agent_config = models.JSONField(default=dict, blank=True)
+    branding = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        verbose_name_plural = "School settings"
+
+    def __str__(self):
+        return f"Settings for {self.school.name}"

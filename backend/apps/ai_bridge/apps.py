@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/ai_bridge/apps.py
-Purpose: Django AppConfig for ai_bridge (the thin proxy to the FastAPI ai-service).
-Owner:   Navanish
-TODO:    class AiBridgeConfig(AppConfig): name = "apps.ai_bridge".
-"""
+from django.apps import AppConfig
+
+
+class AiBridgeConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.ai_bridge"

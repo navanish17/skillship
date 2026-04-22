@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/academics/apps.py
-Purpose: Django AppConfig for academics (years, classes, courses, enrollment).
-Owner:   Prashant
-TODO:    class AcademicsConfig(AppConfig): name = "apps.academics".
-"""
+from django.apps import AppConfig
+
+
+class AcademicsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.academics"

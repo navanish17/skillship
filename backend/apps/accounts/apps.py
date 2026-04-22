@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/accounts/apps.py
-Purpose: Django AppConfig for accounts (users, login, roles).
-Owner:   Prashant
-TODO:    class AccountsConfig(AppConfig): name = "apps.accounts".
-"""
+from django.apps import AppConfig
+
+
+class AccountsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.accounts"

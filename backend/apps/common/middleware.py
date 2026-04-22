@@ -1,11 +1,21 @@
 """
-File:    backend/apps/common/middleware.py
-Purpose: TenantMiddleware — reads request.user.school_id and attaches it as request.school_id.
-Why:     Every view needs to know which school this request belongs to WITHOUT each view
-         repeating the logic. Middleware is the clean way to inject this once.
-Owner:   Navanish
-TODO:    class TenantMiddleware:
-           - On each request: if user is authenticated, set request.school_id = user.school_id.
-           - For MAIN_ADMIN or anonymous users: request.school_id = None.
-         Must run AFTER AuthenticationMiddleware (order matters in base.py MIDDLEWARE list).
+TenantMiddleware — injects request.school_id on every request.
+
+Must run AFTER AuthenticationMiddleware so request.user is available.
+Views and managers use request.school_id to scope all queries.
 """
+
+
+class TenantMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Default: no tenant scope (anonymous users, MAIN_ADMIN)
+        request.school_id = None
+
+        if hasattr(request, "user") and request.user.is_authenticated:
+            # MAIN_ADMIN has school=NULL — they operate across all schools
+            request.school_id = request.user.school_id
+
+        return self.get_response(request)
