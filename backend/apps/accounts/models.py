@@ -1,17 +1,71 @@
 """
 File:    backend/apps/accounts/models.py
-Purpose: Custom User model — identity + role + link to school.
-Why:     Django's default User has no role and no tenant link. We need both because
-         every login screen sends someone to a different dashboard based on role, and
-         every query must be scoped to their school.
+Purpose: Custom User model — identity + role + school link.
 Owner:   Prashant
-TODO:    class User(AbstractUser):
-           - id = UUIDField(primary_key=True, default=uuid.uuid4)
-           - role = CharField(choices=[MAIN_ADMIN, SUB_ADMIN, PRINCIPAL, TEACHER, STUDENT])
-           - school = ForeignKey("schools.School", null=True, on_delete=PROTECT)
-           - phone = CharField(blank=True)
-           - admission_number = CharField(blank=True)    # students only
-           - Meta.constraints:
-               * CheckConstraint: if role == MAIN_ADMIN then school_id IS NULL
-               * CheckConstraint: if role != MAIN_ADMIN then school_id IS NOT NULL
+
+Design:
+- UUID pk (no sequential ID leaks).
+- email is unique + required so we can log in by email.
+- role determines dashboard routing and permissions.
+- school FK is NULL for MAIN_ADMIN only (platform superuser).
+- Two check constraints keep the role/school invariant at the DB level —
+  no bug in Python can ever create a teacher without a school, or a
+  MAIN_ADMIN bound to one school.
+- Custom UserManager so `manage.py createsuperuser` produces a valid
+  MAIN_ADMIN (otherwise the constraint above rejects the row).
 """
+
+import uuid
+
+from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
+from django.db import models
+
+
+class UserManager(DjangoUserManager):
+    """createsuperuser → MAIN_ADMIN with school=NULL, which our constraints allow."""
+
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("role", User.Role.MAIN_ADMIN)
+        extra_fields.setdefault("school", None)
+        return self._create_user(username, email, password, **extra_fields)
+
+
+class User(AbstractUser):
+    class Role(models.TextChoices):
+        MAIN_ADMIN = "MAIN_ADMIN", "Main Admin"
+        SUB_ADMIN = "SUB_ADMIN", "Sub Admin"
+        PRINCIPAL = "PRINCIPAL", "Principal"
+        TEACHER = "TEACHER", "Teacher"
+        STUDENT = "STUDENT", "Student"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField("email address", unique=True)
+    role = models.CharField(max_length=20, choices=Role.choices)
+    school = models.ForeignKey(
+        "schools.School",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="users",
+    )
+    phone = models.CharField(max_length=20, blank=True)
+    admission_number = models.CharField(max_length=50, blank=True)
+
+    objects = UserManager()
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="main_admin_no_school",
+                condition=~models.Q(role="MAIN_ADMIN") | models.Q(school__isnull=True),
+            ),
+            models.CheckConstraint(
+                name="non_admin_has_school",
+                condition=models.Q(role="MAIN_ADMIN") | models.Q(school__isnull=False),
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.get_full_name() or self.username} ({self.role})"

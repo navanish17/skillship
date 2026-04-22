@@ -1,20 +1,15 @@
-# File:    backend/requirements.txt
-# Purpose: Production Python dependencies for the Django backend.
-# Why:     Pinned versions = reproducible builds across the team + CI + prod.
-# Owner:   Navanish
-# TODO (add these with exact versions after `pip install`):
-#   Django>=5.0
-#   djangorestframework
-#   djangorestframework-simplejwt
-#   drf-spectacular
-#   django-cors-headers
-#   django-filter
-#   psycopg[binary]               # PostgreSQL driver
-#   redis
-#   celery
-#   django-celery-beat
-#   httpx                          # calls to ai-service
-#   python-dotenv
-#   gunicorn                       # prod WSGI server
-#   whitenoise                     # static files
-#   sentry-sdk                     # error tracking
+Django==5.1.5
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.4.0
+drf-spectacular==0.28.0
+django-cors-headers==4.6.0
+django-filter==24.3
+django-celery-beat==2.7.0
+psycopg[binary]==3.2.4
+redis==5.2.1
+celery==5.4.0
+httpx==0.28.1
+python-dotenv==1.0.1
+gunicorn==23.0.0
+whitenoise==6.8.2
+sentry-sdk==2.19.2

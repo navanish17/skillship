@@ -1,11 +1,74 @@
 """
-File:    backend/apps/common/permissions.py
-Purpose: Shared DRF permission classes for role-based access and tenant isolation.
-Why:     Every view needs these — writing them once avoids bugs where one view forgets a check.
-Owner:   Navanish
-TODO:    - class Role: MAIN_ADMIN, SUB_ADMIN, PRINCIPAL, TEACHER, STUDENT (string constants).
-         - IsMainAdmin, IsSubAdmin, IsPrincipal, IsTeacher, IsStudent (DRF BasePermission).
-         - IsSchoolStaff (any of principal/teacher/sub_admin of SAME school).
-         - IsSameSchool (object-level: obj.school_id == request.school_id).
-         Always combine tenant + role, e.g. [IsAuthenticated, IsSameSchool, IsTeacher].
+Shared DRF permission classes for role-based access and tenant isolation.
+
+Usage in views:
+    permission_classes = [IsAuthenticated, IsSameSchool, IsTeacher]
 """
+
+from rest_framework.permissions import BasePermission
+
+
+class Role:
+    """String constants matching User.Role choices — use these in permission checks."""
+
+    MAIN_ADMIN = "MAIN_ADMIN"
+    SUB_ADMIN = "SUB_ADMIN"
+    PRINCIPAL = "PRINCIPAL"
+    TEACHER = "TEACHER"
+    STUDENT = "STUDENT"
+
+
+# ── Single-role checks ────────────────────────────────────────────────────────
+
+
+class IsMainAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == Role.MAIN_ADMIN
+
+
+class IsSubAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == Role.SUB_ADMIN
+
+
+class IsPrincipal(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == Role.PRINCIPAL
+
+
+class IsTeacher(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == Role.TEACHER
+
+
+class IsStudent(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == Role.STUDENT
+
+
+# ── Composite checks ─────────────────────────────────────────────────────────
+
+
+class IsSchoolStaff(BasePermission):
+    """Any authenticated user who belongs to a school and has a staff-level role."""
+
+    STAFF_ROLES = {Role.SUB_ADMIN, Role.PRINCIPAL, Role.TEACHER}
+
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated
+            and request.user.role in self.STAFF_ROLES
+            and request.user.school_id is not None
+        )
+
+
+class IsSameSchool(BasePermission):
+    """
+    Object-level permission: the object's school must match the requester's school.
+    MAIN_ADMIN bypasses this check (they can see any school's data).
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.role == Role.MAIN_ADMIN:
+            return True
+        return getattr(obj, "school_id", None) == request.school_id

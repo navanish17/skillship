@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/notifications/apps.py
-Purpose: Django AppConfig for notifications (in-app, email, SMS).
-Owner:   Vishal
-TODO:    class NotificationsConfig(AppConfig): name = "apps.notifications".
-"""
+from django.apps import AppConfig
+
+
+class NotificationsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.notifications"

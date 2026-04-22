@@ -1,9 +1,24 @@
-"""
-File:    backend/config/urls.py
-Purpose: Root URL router — maps /api/v1/... to each app's urls.py.
-Why:     Single place that decides which URL goes to which app.
-Owner:   Navanish
-TODO:    Include: /admin/, /api/v1/auth/, /api/v1/schools/, /api/v1/academics/,
-         /api/v1/quizzes/, /api/v1/content/, /api/v1/analytics/,
-         /api/v1/notifications/, /api/v1/ai/, /api/schema/, /api/docs/, /healthz/.
-"""
+"""Root URL configuration."""
+
+from django.contrib import admin
+from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+urlpatterns = [
+    # Django admin
+    path("admin/", admin.site.urls),
+    # API v1
+    path("api/v1/auth/", include("apps.accounts.urls")),
+    path("api/v1/schools/", include("apps.schools.urls")),
+    path("api/v1/academics/", include("apps.academics.urls")),
+    path("api/v1/quizzes/", include("apps.quizzes.urls")),
+    path("api/v1/content/", include("apps.content.urls")),
+    path("api/v1/analytics/", include("apps.analytics.urls")),
+    path("api/v1/notifications/", include("apps.notifications.urls")),
+    path("api/v1/ai/", include("apps.ai_bridge.urls")),
+    # Health check
+    path("", include("apps.common.urls")),
+    # OpenAPI schema + docs
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+]

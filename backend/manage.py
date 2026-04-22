@@ -1,7 +1,21 @@
-"""
-File:    backend/manage.py
-Purpose: Django command-line entrypoint (runserver, migrate, createsuperuser, test, etc).
-Why:     Every Django project needs this — it is how you run the backend locally.
-Owner:   Navanish
-TODO:    Standard Django 5 manage.py — points DJANGO_SETTINGS_MODULE to config.settings.dev.
-"""
+#!/usr/bin/env python
+"""Django management entrypoint."""
+
+import os
+import sys
+
+
+def main():
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable?"
+        ) from exc
+    execute_from_command_line(sys.argv)
+
+
+if __name__ == "__main__":
+    main()

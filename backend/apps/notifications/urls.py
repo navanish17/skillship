@@ -1,6 +1,3 @@
-"""
-File:    backend/apps/notifications/urls.py
-Purpose: URL routes for notifications.
-Owner:   Vishal
-TODO:    router.register("notifications", NotificationViewSet); templates sub-route.
-"""
+"""Notification endpoints — will be populated when we build the notifications views."""
+
+urlpatterns = []

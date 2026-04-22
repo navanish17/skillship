@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/analytics/apps.py
-Purpose: Django AppConfig for analytics (dashboards, performance metrics, risk signals).
-Owner:   Vishal
-TODO:    class AnalyticsConfig(AppConfig): name = "apps.analytics".
-"""
+from django.apps import AppConfig
+
+
+class AnalyticsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.analytics"
