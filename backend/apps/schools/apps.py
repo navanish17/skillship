@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/schools/apps.py
-Purpose: Django AppConfig for "schools" (tenant root).
-Owner:   Prashant
-TODO:    class SchoolsConfig(AppConfig): name = "apps.schools".
-"""
+from django.apps import AppConfig
+
+
+class SchoolsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.schools"

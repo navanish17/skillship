@@ -1,6 +1,6 @@
-"""
-File:    backend/apps/quizzes/apps.py
-Purpose: Django AppConfig for quizzes.
-Owner:   Vishal
-TODO:    class QuizzesConfig(AppConfig): name = "apps.quizzes".
-"""
+from django.apps import AppConfig
+
+
+class QuizzesConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.quizzes"

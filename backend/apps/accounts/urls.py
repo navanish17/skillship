@@ -1,6 +1,18 @@
 """
 File:    backend/apps/accounts/urls.py
-Purpose: URL routes for auth + users (/login/, /refresh/, /logout/, /me/, /users/...).
+Purpose: URL routes for auth endpoints. Mounted at /api/v1/auth/ by config.urls.
 Owner:   Prashant
-TODO:    router.register("users", UserViewSet); urlpatterns = [login, refresh, logout, me, ...router.urls].
 """
+
+from django.urls import path
+
+from . import views
+
+app_name = "accounts"
+
+urlpatterns = [
+    path("login/", views.LoginView.as_view(), name="login"),
+    path("refresh/", views.RefreshView.as_view(), name="refresh"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
+    path("me/", views.MeView.as_view(), name="me"),
+]

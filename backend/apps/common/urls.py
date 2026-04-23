@@ -1,6 +1,7 @@
-"""
-File:    backend/apps/common/urls.py
-Purpose: URL patterns for the common app (currently just /healthz/).
-Owner:   Navanish
-TODO:    urlpatterns = [path("healthz/", views.healthz)].
-"""
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path("healthz/", views.healthz, name="healthz"),
+]

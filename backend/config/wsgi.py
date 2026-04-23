@@ -1,7 +1,9 @@
-"""
-File:    backend/config/wsgi.py
-Purpose: WSGI application entrypoint (used by Gunicorn in production).
-Why:     Production web servers load this to serve the Django app.
-Owner:   Navanish
-TODO:    Standard Django WSGI boilerplate.
-"""
+"""WSGI entrypoint — used by Gunicorn in production."""
+
+import os
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+
+application = get_wsgi_application()
