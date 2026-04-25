@@ -7,18 +7,24 @@ Why this lives in `common`:
     Every tenant-scoped resource (users, classes, courses, enrollments,
     quizzes, content, …) needs the same two guarantees:
 
-      1. The queryset is filtered by request.school_id BEFORE the view
-         ever sees it. Forgetting this is the bug that ends the contract.
+      1. The queryset is filtered by the actor's school_id BEFORE the
+         view ever sees it. Forgetting this is the bug that ends the
+         contract.
       2. On create, `school_id` is stamped from request.user — never
          from request data. Otherwise a teacher could POST
          `{"school_id": "<other school>"}` and forge cross-tenant rows.
 
-    Putting both rules in a single base class makes them impossible to
-    forget. Subclasses set `queryset` + `serializer_class` and inherit
-    correctness.
-
     MAIN_ADMIN bypasses the scope filter (they operate across all
     schools by definition).
+
+Why we read `request.user.school_id` and NOT `request.school_id`:
+    `request.school_id` is set by TenantMiddleware via SimpleLazyObject
+    so it correctly reflects DRF's lazy JWT auth — but a SimpleLazyObject
+    isn't auto-resolved when handed straight to the ORM as a kwarg
+    (psycopg can't adapt it). Reading the user attribute returns the raw
+    UUID, which the ORM and Django filter machinery handle natively.
+    request.school_id stays useful for permission classes / templates
+    where attribute access does the resolution for us.
 """
 
 from __future__ import annotations
@@ -29,26 +35,24 @@ from .permissions import Role
 
 
 class TenantScopedViewSet(ModelViewSet):
-    """ModelViewSet that scopes by request.school_id and stamps school on create.
+    """ModelViewSet that scopes by the actor's school and stamps it on create.
 
     Subclasses MUST set:
         queryset         — base queryset against the model
         serializer_class — the (de)serializer
 
     Subclasses MAY override:
-        get_queryset()      — to add ordering, select_related, etc. — but
-                              must still call super().get_queryset() so the
-                              tenant filter stays applied.
-        perform_create()    — to add side-effects, again calling super().
+        get_queryset()   — to add ordering, select_related, etc. — but must
+                           still call super().get_queryset() so the tenant
+                           filter stays applied.
+        perform_create() — to add side-effects, again calling super().
     """
 
     def get_queryset(self):
         qs = super().get_queryset()
         if self._user_is_main_admin():
             return qs
-        # request.school_id is None for anonymous and MAIN_ADMIN; the
-        # IsAuthenticated permission guards the former.
-        return qs.filter(school_id=self.request.school_id)
+        return qs.filter(school_id=self.request.user.school_id)
 
     def perform_create(self, serializer):
         if self._user_is_main_admin():
@@ -58,7 +62,7 @@ class TenantScopedViewSet(ModelViewSet):
         else:
             # Everyone else has their school stamped from the JWT user —
             # never from request data. This is non-negotiable.
-            serializer.save(school_id=self.request.school_id)
+            serializer.save(school_id=self.request.user.school_id)
 
     # ── Internals ───────────────────────────────────────────────────────────
 
